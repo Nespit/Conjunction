@@ -7,26 +7,8 @@ public class NodeController : MonoBehaviour
     private SpriteRenderer ownerColorRenderer;   //Renders the inner color of the node.
     private SpriteRenderer symbolRenderer;  //Renders the symbol of the node.
 
-    private Color ownerColor;
-    private Color stateColor;
-
-    enum OwnerColor // your custom enumeration
-    {
-        Green,
-        Purple,
-        Orange,
-        Blue
-    };
-
-    enum StateColor // your custom enumeration
-    {
-        White,
-        Green,
-        Red
-    };
-
-    public OwnerColor OwnerColor;
-    public string State;
+    public Color ownerColor;
+    public Color stateColor;   
 
     public bool isInfected;
     public bool isProtected;
@@ -36,9 +18,6 @@ public class NodeController : MonoBehaviour
 
     void Awake()
     {
-        switch ()
-        ownerColor = 
-
         //Get all the sprite renderers of the node.
         foreach (Transform t in transform)
         {
