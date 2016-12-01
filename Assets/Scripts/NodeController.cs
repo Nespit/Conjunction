@@ -13,7 +13,12 @@ public class NodeController : MonoBehaviour
     private LineRenderer connectionRendererC;
     private LineRenderer connectionRendererD;
 
-    private string sortingLayer = "Connections"; 
+    private NodeController connectionControllerA;
+    private NodeController connectionControllerB;
+    private NodeController connectionControllerC;
+    private NodeController connectionControllerD;
+
+    private string sortingLayer = "Connections";
 
     public GameObject connectionA;
     public GameObject connectionB;
@@ -22,7 +27,7 @@ public class NodeController : MonoBehaviour
 
     public Color ownerColor;
     public Color stateColor;
-    
+
     public bool isInfected;
     public bool isProtected;
 
@@ -31,7 +36,7 @@ public class NodeController : MonoBehaviour
 
     void Awake()
     {
-        //Get all the sprite renderers of the node.
+        //Get all the renderers attached to the children of the node.
         foreach (Transform t in transform)
         {
             if (t.name == "Outer Color")
@@ -52,41 +57,68 @@ public class NodeController : MonoBehaviour
             {
                 connectionRendererA = t.GetComponent<LineRenderer>();
                 connectionRendererA.sortingLayerName = sortingLayer;
+
+                //Set the connection properties for this connection.
                 if (connectionA != null)
                 {
+                    connectionControllerA = connectionA.GetComponent<NodeController>();
+
                     connectionRendererA.SetPosition(0, transform.position);
                     connectionRendererA.SetPosition(1, connectionA.transform.position);
+
+                    connectionRendererA.startColor = ownerColor;
+                    connectionRendererA.endColor = connectionControllerA.ownerColor;
                 }
-               
             }
             else if (t.name == "ConnectionB")
             {
                 connectionRendererB = t.GetComponent<LineRenderer>();
                 connectionRendererB.sortingLayerName = sortingLayer;
+
+                //Set the connection properties for this connection.
                 if (connectionB != null)
                 {
+                    connectionControllerB = connectionB.GetComponent<NodeController>();
+
                     connectionRendererB.SetPosition(0, transform.position);
                     connectionRendererB.SetPosition(1, connectionB.transform.position);
+
+                    connectionRendererB.startColor = ownerColor;
+                    connectionRendererB.endColor = connectionControllerB.ownerColor;
                 }
             }
             else if (t.name == "ConnectionC")
             {
                 connectionRendererC = t.GetComponent<LineRenderer>();
                 connectionRendererC.sortingLayerName = sortingLayer;
+
+                //Set the connection properties for this connection.
                 if (connectionC != null)
                 {
+                    connectionControllerC = connectionC.GetComponent<NodeController>();
+
                     connectionRendererC.SetPosition(0, transform.position);
-                    connectionRendererC.SetPosition(1, connectionC.transform.position);
+                    connectionRendererC.SetPosition(1, connectionA.transform.position);
+
+                    connectionRendererC.startColor = ownerColor;
+                    connectionRendererC.endColor = connectionControllerA.ownerColor;
                 }
             }
             else if (t.name == "ConnectionD")
             {
                 connectionRendererD = t.GetComponent<LineRenderer>();
                 connectionRendererD.sortingLayerName = sortingLayer;
+
+                //Set the connection properties for this connection.
                 if (connectionD != null)
                 {
+                    connectionControllerD = connectionD.GetComponent<NodeController>();
+
                     connectionRendererD.SetPosition(0, transform.position);
                     connectionRendererD.SetPosition(1, connectionD.transform.position);
+
+                    connectionRendererD.startColor = ownerColor;
+                    connectionRendererD.endColor = connectionControllerD.ownerColor;
                 }
             }
         }
@@ -97,7 +129,7 @@ public class NodeController : MonoBehaviour
         if (!isProtected && !isInfected)
         {
             StartCoroutine(Infect());
-        }  
+        }
     }
 
     IEnumerator Infect()
