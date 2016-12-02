@@ -28,6 +28,11 @@ public class NodeController : MonoBehaviour
     public Color ownerColor;
     public Color stateColor;
 
+    public Sprite virus;
+    public Sprite cross;
+    public Sprite shield;
+    public Sprite sword;
+
     public bool isInfected;
     public bool isProtected;
 
@@ -124,7 +129,7 @@ public class NodeController : MonoBehaviour
         }
     }
 
-    void StartInfection()
+    public void StartInfection()
     {
         if (!isProtected && !isInfected)
         {
@@ -134,26 +139,34 @@ public class NodeController : MonoBehaviour
 
     IEnumerator Infect()
     {
-        yield return new WaitForSeconds(40);
+        yield return new WaitForSeconds(5);
         isInfected = true;
+        symbolRenderer.sprite = virus;
+        stateColorRenderer.color = Color.red;
     }
 
-    void StartProtecting()
+    public void StartProtecting()
     {
         StartCoroutine(Protect());
+        symbolRenderer.sprite = shield;
+        stateColorRenderer.color = Color.yellow;
     }
 
     IEnumerator Protect()
     {
         yield return new WaitForSeconds(timeTilProtected);
         isProtected = true;
+        symbolRenderer.sprite = shield;
+        stateColorRenderer.color = Color.green;
     }
 
-    void StartHealing()
+    public void StartHealing()
     {
         if (isInfected)
         {
             StartCoroutine(Heal());
+            symbolRenderer.sprite = cross;
+            stateColorRenderer.color = Color.yellow;
         }
     }
 
@@ -161,5 +174,7 @@ public class NodeController : MonoBehaviour
     {
         yield return new WaitForSeconds(timeTilHealed);
         isInfected = false;
+        symbolRenderer.sprite = null;
+        stateColorRenderer.color = Color.white;
     }
 }
