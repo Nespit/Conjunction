@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-//[ExecuteInEditMode]
+[ExecuteInEditMode]
 public class NodeController : MonoBehaviour
 {
     private SpriteRenderer stateColorRenderer;   //Renders the outer color of the node.
@@ -34,6 +34,7 @@ public class NodeController : MonoBehaviour
     public Sprite sword;
 
     public bool isInfected;
+    private bool startedSpreading = false;
     public bool isProtected;
 
     public int timeTilProtected;
@@ -103,10 +104,10 @@ public class NodeController : MonoBehaviour
                     connectionControllerC = connectionC.GetComponent<NodeController>();
 
                     connectionRendererC.SetPosition(0, transform.position);
-                    connectionRendererC.SetPosition(1, connectionA.transform.position);
+                    connectionRendererC.SetPosition(1, connectionC.transform.position);
 
                     connectionRendererC.startColor = ownerColor;
-                    connectionRendererC.endColor = connectionControllerA.ownerColor;
+                    connectionRendererC.endColor = connectionControllerC.ownerColor;
                 }
             }
             else if (t.name == "ConnectionD")
@@ -129,6 +130,69 @@ public class NodeController : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        if (isInfected && !startedSpreading)
+        {
+            StartSpreading();
+        }
+    }
+
+    public void StartSpreading()
+    {
+        StartCoroutine(Spread());
+        startedSpreading = true;
+    }
+
+    IEnumerator Spread()
+    {
+        yield return new WaitForSeconds((int)Random.Range(5, 8));
+        if (isInfected)
+        {
+            //int rnd = (int)Random.Range(1, 16);
+
+            if (connectionA != null)
+            {
+                connectionControllerA = connectionA.GetComponent<NodeController>();
+
+                if (!connectionControllerA.isInfected)
+                {
+                    connectionControllerA.StartInfection();          
+                }
+            }
+            if (connectionB != null)
+            {
+                connectionControllerB = connectionB.GetComponent<NodeController>();
+
+                if (!connectionControllerB.isInfected)
+                {
+                    connectionControllerB.StartInfection();
+                }
+
+            }
+            if (connectionC != null)
+            {
+                connectionControllerC = connectionC.GetComponent<NodeController>();
+
+                if (!connectionControllerC.isInfected)
+                {
+                    connectionControllerC.StartInfection();
+                }
+            }
+            if (connectionD != null)
+            {
+                connectionControllerD = connectionD.GetComponent<NodeController>();
+
+                if (!connectionControllerD.isInfected)
+                {
+                    connectionControllerD.StartInfection();
+                }
+            }
+        }
+
+        startedSpreading = false;
+    }
+
     public void StartInfection()
     {
         if (!isProtected && !isInfected)
@@ -139,25 +203,34 @@ public class NodeController : MonoBehaviour
 
     IEnumerator Infect()
     {
-        yield return new WaitForSeconds(5);
-        isInfected = true;
-        symbolRenderer.sprite = virus;
-        stateColorRenderer.color = Color.red;
+        if (!isProtected && !isInfected)
+        {
+            yield return new WaitForSeconds(0);
+            isInfected = true;
+            symbolRenderer.sprite = virus;
+            stateColorRenderer.color = Color.red;
+        }
     }
 
     public void StartProtecting()
     {
-        StartCoroutine(Protect());
-        symbolRenderer.sprite = shield;
-        stateColorRenderer.color = Color.yellow;
+        if (!isProtected && !isInfected)
+        {
+            StartCoroutine(Protect());
+            symbolRenderer.sprite = shield;
+            stateColorRenderer.color = Color.yellow;
+        }
     }
 
     IEnumerator Protect()
     {
         yield return new WaitForSeconds(timeTilProtected);
-        isProtected = true;
-        symbolRenderer.sprite = shield;
-        stateColorRenderer.color = Color.green;
+        if (!isInfected)
+        {
+            isProtected = true;
+            symbolRenderer.sprite = shield;
+            stateColorRenderer.color = Color.green;
+        }
     }
 
     public void StartHealing()
