@@ -3,23 +3,76 @@ using UnityEngine.Networking;
 
 public class PlayerController : NetworkBehaviour
 {
-    void Update()
+	GameManager gameManager;
+	[SyncVar] public Color playerColor;
+
+//	void Update()
+//    {
+//        if (!isLocalPlayer)
+//        {
+//            return;
+//        }
+//
+//        
+//    }
+
+	void OnStartLocalPlayer()
     {
-        if (!isLocalPlayer)
-        {
-            return;
-        }
+		gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager> ();   
 
-        var x = Input.GetAxis("Horizontal") * Time.deltaTime * 3.0f;
-        var y = Input.GetAxis("Vertical") * Time.deltaTime * 3.0f;
-
-        transform.Translate(0, y, 0);
-        transform.Translate(x, 0, 0);
+		AssignColor ();
     }
 
-    public override void OnStartLocalPlayer()
-    {
-        GetComponent<MeshRenderer>().material.color = Color.blue;
-        transform.position = new Vector4(-14, -5, -5);
-    }
+	void AssignColor()
+	{
+		bool assignedColor = false;
+
+		while (!assignedColor) 
+		{
+			int rnd = (int)Random.Range (1, 4);
+
+			switch (rnd) {
+			case 1:
+				{
+					if (!gameManager.colorIsTakenA)
+					{
+						playerColor = gameManager.playerColorA;
+						gameManager.colorIsTakenA = true;
+						assignedColor = true;
+					}
+					return;
+				}
+			case 2:
+				{
+					if (!gameManager.colorIsTakenB)
+					{
+						playerColor = gameManager.playerColorB;
+						gameManager.colorIsTakenB = true;
+						assignedColor = true;
+					}
+					return;
+				}
+			case 3:
+				{
+					if (!gameManager.colorIsTakenC)
+					{
+						playerColor = gameManager.playerColorC;
+						gameManager.colorIsTakenC = true;
+						assignedColor = true;
+					}
+					return;
+				}
+			case 4:
+				{
+					if (!gameManager.colorIsTakenD)
+					{
+						playerColor = gameManager.playerColorD;
+						gameManager.colorIsTakenD = true;
+						assignedColor = true;
+					}
+					return;
+				}
+			}
+		}
+	}
 }

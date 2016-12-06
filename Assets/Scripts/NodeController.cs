@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[ExecuteInEditMode]
+//[ExecuteInEditMode]
 public class NodeController : MonoBehaviour
 {
     private SpriteRenderer stateColorRenderer;   //Renders the outer color of the node.
