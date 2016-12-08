@@ -6,26 +6,24 @@ public class PlayerController : NetworkBehaviour
 	GameManager gameManager;
 	[SyncVar] public Color playerColor;
 
-//	void Update()
-//    {
-//        if (!isLocalPlayer)
-//        {
-//            return;
-//        }
-//
-//        
-//    }
-
-	void OnStartLocalPlayer()
+    void Update()
     {
-		gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager> ();   
+        if (!isLocalPlayer)
+        {
+            return;
+        }
+    }
 
+    void OnStartLocalPlayer()
+    {
 		AssignColor ();
     }
 
 	void AssignColor()
 	{
-		bool assignedColor = false;
+        gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
+
+        bool assignedColor = false;
 
 		while (!assignedColor) 
 		{
@@ -74,5 +72,13 @@ public class PlayerController : NetworkBehaviour
 				}
 			}
 		}
-	}
+
+        CmdAssignedColor(playerColor);
+    }
+
+    [Command]
+    public void CmdAssignedColor(Color c)
+    {
+        playerColor = c;
+    }
 }

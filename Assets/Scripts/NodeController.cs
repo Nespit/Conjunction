@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 //[ExecuteInEditMode]
 public class NodeController : MonoBehaviour
@@ -20,6 +21,10 @@ public class NodeController : MonoBehaviour
 
     private string sortingLayer = "Connections";
 
+    [SerializeField]
+    List<City> m_connections;
+    [SerializeField]
+    List<NodeController> m_connectedCities;
     public GameObject connectionA;
     public GameObject connectionB;
     public GameObject connectionC;
@@ -34,14 +39,27 @@ public class NodeController : MonoBehaviour
     public Sprite sword;
 
     public bool isInfected;
-    private bool startedSpreading = false;
+    public bool startedSpreading = false;
     public bool isProtected;
 
     public int timeTilProtected;
     public int timeTilHealed;
+    private WaitForSeconds m_infectionTick;
 
-    void Awake()
+    private const float INFECTION_TICK_TIME = 0.1f;
+
+
+    void Start()
     {
+        m_infectionTick = new WaitForSeconds(INFECTION_TICK_TIME);
+        m_connectedCities = new List<NodeController>();
+        var DB = transform.parent.GetComponent<CityDatabase>();
+        for(int i = 0; i < m_connections.Count; i++)
+        {
+            m_connectedCities.Add(DB.GetCity(m_connections[i]));
+        }
+
+
         //Get all the renderers attached to the children of the node.
         foreach (Transform t in transform)
         {
@@ -138,6 +156,17 @@ public class NodeController : MonoBehaviour
         }
     }
 
+
+    public void GetInfected()
+    {
+        if (!isInfected)
+        {
+            isInfected = true;
+            StartCoroutine(Spread());
+        }
+
+    }
+
     public void StartSpreading()
     {
         StartCoroutine(Spread());
@@ -146,7 +175,7 @@ public class NodeController : MonoBehaviour
 
     IEnumerator Spread()
     {
-        yield return new WaitForSeconds((int)Random.Range(5, 8));
+        yield return new WaitForSeconds((int)Random.Range(6, 12));
         if (isInfected)
         {
             //int rnd = (int)Random.Range(1, 16);
@@ -205,7 +234,7 @@ public class NodeController : MonoBehaviour
     {
         if (!isProtected && !isInfected)
         {
-            yield return new WaitForSeconds(0);
+            yield return m_infectionTick;
             isInfected = true;
             symbolRenderer.sprite = virus;
             stateColorRenderer.color = Color.red;
