@@ -10,7 +10,8 @@ public enum City
     Chicago = 3,
     SanFrancisco = 4,
     Vancouver = 5,
-    CityCount = 6
+    Houston = 6,
+    CityCount = 7
 
 }
 

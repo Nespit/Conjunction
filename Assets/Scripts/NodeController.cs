@@ -1,282 +1,191 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 //[ExecuteInEditMode]
 public class NodeController : MonoBehaviour
 {
+    [SerializeField]
     private SpriteRenderer stateColorRenderer;   //Renders the outer color of the node.
+    [SerializeField]
     private SpriteRenderer ownerColorRenderer;   //Renders the inner color of the node.
+    [SerializeField]
     private SpriteRenderer symbolRenderer;  //Renders the symbol of the node.
 
-    private LineRenderer connectionRendererA;
-    private LineRenderer connectionRendererB;
-    private LineRenderer connectionRendererC;
-    private LineRenderer connectionRendererD;
-
-    private NodeController connectionControllerA;
-    private NodeController connectionControllerB;
-    private NodeController connectionControllerC;
-    private NodeController connectionControllerD;
+    [SerializeField]
+    private Sprite virus;
+    [SerializeField]
+    private Sprite cross;
+    [SerializeField]
+    private Sprite shield;
+    [SerializeField]
+    private Sprite sword;
 
     private string sortingLayer = "Connections";
 
     [SerializeField]
     List<City> m_connections;
-    [SerializeField]
-    List<NodeController> m_connectedCities;
-    public GameObject connectionA;
-    public GameObject connectionB;
-    public GameObject connectionC;
-    public GameObject connectionD;
+    Dictionary<NodeController,LineRenderer> m_connectedCities;
 
+    public Material connectionMat;
     public Color ownerColor;
     public Color stateColor;
+    
 
-    public Sprite virus;
-    public Sprite cross;
-    public Sprite shield;
-    public Sprite sword;
 
-    public bool isInfected;
-    public bool startedSpreading = false;
+    private bool m_isInfected;
+    public bool startedSpreading
+    {
+        get
+        {
+            return m_infection != null;
+        }
+    }
     public bool isProtected;
 
-    public int timeTilProtected;
-    public int timeTilHealed;
-    private WaitForSeconds m_infectionTick;
+    private WaitForSeconds[] m_infectionTicks;
+    private WaitForSeconds m_protectedDelay;
+    private WaitForSeconds m_protectedTick;
+    private WaitForSeconds m_healDelayTick;
 
-    private const float INFECTION_TICK_TIME = 0.1f;
+    [SerializeField]
+    private int m_numberOfInfectionTickers;
+    [SerializeField]
+    private float m_minInfectionTickTime;
+    [SerializeField]
+    private float m_maxInfectionTickTime;
+    [SerializeField]
+    private float m_protectDelay;
+    [SerializeField]
+    private float m_protectionDuration;
+    [SerializeField]
+    private float m_healDelay;
+
+    private Coroutine m_infection;
+    private Coroutine m_protection;
+    private Coroutine m_heal;
+
+    private const float CONNECTION_WIDTH = 0.15f;
 
 
     void Start()
     {
-        m_infectionTick = new WaitForSeconds(INFECTION_TICK_TIME);
-        m_connectedCities = new List<NodeController>();
+        //Initialize YIELDs
+        m_infectionTicks = new WaitForSeconds[m_numberOfInfectionTickers];
+        m_protectedDelay = new WaitForSeconds(m_protectDelay);
+        m_protectedTick = new WaitForSeconds(m_protectionDuration);
+        m_healDelayTick = new WaitForSeconds(m_healDelay);
+
+        for (int i = 0; i < m_numberOfInfectionTickers; i++)
+        {
+            m_infectionTicks[i] = new WaitForSeconds(Random.Range(m_minInfectionTickTime, m_maxInfectionTickTime));
+        }
+
+        //Get connected nodes
+        m_connectedCities = new Dictionary<NodeController, LineRenderer>();
         var DB = transform.parent.GetComponent<CityDatabase>();
-        for(int i = 0; i < m_connections.Count; i++)
+        for (int i = 0; i < m_connections.Count; i++)
         {
-            m_connectedCities.Add(DB.GetCity(m_connections[i]));
+            GameObject nO = new GameObject("Connection Renderer");
+            nO.transform.parent = transform;
+            nO.transform.localPosition = Vector3.zero;
+            nO.transform.localRotation = Quaternion.identity;
+
+            m_connectedCities.Add(DB.GetCity(m_connections[i]), nO.AddComponent<LineRenderer>());
+        }
+
+        //setup connections
+        foreach (KeyValuePair<NodeController, LineRenderer> connection in m_connectedCities)
+        {
+            connection.Value.material = connectionMat;
+            connection.Value.startWidth = CONNECTION_WIDTH;
+            connection.Value.endWidth = CONNECTION_WIDTH;
+            connection.Value.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            connection.Value.receiveShadows = false;
+            connection.Value.sortingLayerName = sortingLayer;
+            connection.Value.SetPosition(0, transform.position);
+            connection.Value.SetPosition(1, connection.Key.transform.position);
+            connection.Value.startColor = ownerColor;
+            connection.Value.endColor = connection.Key.ownerColor;
         }
 
 
-        //Get all the renderers attached to the children of the node.
-        foreach (Transform t in transform)
-        {
-            if (t.name == "Outer Color")
-            {
-                ownerColorRenderer = t.GetComponent<SpriteRenderer>();
-                ownerColorRenderer.color = ownerColor;
-            }
-            else if (t.name == "Inner Color")
-            {
-                stateColorRenderer = t.GetComponent<SpriteRenderer>();
-                stateColorRenderer.color = stateColor;
-            }
-            else if (t.name == "Symbol")
-            {
-                symbolRenderer = t.GetComponent<SpriteRenderer>();
-            }
-            else if (t.name == "ConnectionA")
-            {
-                connectionRendererA = t.GetComponent<LineRenderer>();
-                connectionRendererA.sortingLayerName = sortingLayer;
-
-                //Set the connection properties for this connection.
-                if (connectionA != null)
-                {
-                    connectionControllerA = connectionA.GetComponent<NodeController>();
-
-                    connectionRendererA.SetPosition(0, transform.position);
-                    connectionRendererA.SetPosition(1, connectionA.transform.position);
-
-                    connectionRendererA.startColor = ownerColor;
-                    connectionRendererA.endColor = connectionControllerA.ownerColor;
-                }
-            }
-            else if (t.name == "ConnectionB")
-            {
-                connectionRendererB = t.GetComponent<LineRenderer>();
-                connectionRendererB.sortingLayerName = sortingLayer;
-
-                //Set the connection properties for this connection.
-                if (connectionB != null)
-                {
-                    connectionControllerB = connectionB.GetComponent<NodeController>();
-
-                    connectionRendererB.SetPosition(0, transform.position);
-                    connectionRendererB.SetPosition(1, connectionB.transform.position);
-
-                    connectionRendererB.startColor = ownerColor;
-                    connectionRendererB.endColor = connectionControllerB.ownerColor;
-                }
-            }
-            else if (t.name == "ConnectionC")
-            {
-                connectionRendererC = t.GetComponent<LineRenderer>();
-                connectionRendererC.sortingLayerName = sortingLayer;
-
-                //Set the connection properties for this connection.
-                if (connectionC != null)
-                {
-                    connectionControllerC = connectionC.GetComponent<NodeController>();
-
-                    connectionRendererC.SetPosition(0, transform.position);
-                    connectionRendererC.SetPosition(1, connectionC.transform.position);
-
-                    connectionRendererC.startColor = ownerColor;
-                    connectionRendererC.endColor = connectionControllerC.ownerColor;
-                }
-            }
-            else if (t.name == "ConnectionD")
-            {
-                connectionRendererD = t.GetComponent<LineRenderer>();
-                connectionRendererD.sortingLayerName = sortingLayer;
-
-                //Set the connection properties for this connection.
-                if (connectionD != null)
-                {
-                    connectionControllerD = connectionD.GetComponent<NodeController>();
-
-                    connectionRendererD.SetPosition(0, transform.position);
-                    connectionRendererD.SetPosition(1, connectionD.transform.position);
-
-                    connectionRendererD.startColor = ownerColor;
-                    connectionRendererD.endColor = connectionControllerD.ownerColor;
-                }
-            }
-        }
     }
 
-    void Update()
+    #region Infect
+    public void Infect()
     {
-        if (isInfected && !startedSpreading)
+        if (!m_isInfected && !isProtected)
         {
-            StartSpreading();
-        }
-    }
-
-
-    public void GetInfected()
-    {
-        if (!isInfected)
-        {
-            isInfected = true;
-            StartCoroutine(Spread());
+            m_infection = StartCoroutine(Infection());
         }
 
     }
 
-    public void StartSpreading()
+    IEnumerator Infection()
     {
-        StartCoroutine(Spread());
-        startedSpreading = true;
-    }
-
-    IEnumerator Spread()
-    {
-        yield return new WaitForSeconds((int)Random.Range(6, 12));
-        if (isInfected)
+        m_isInfected = true;
+        symbolRenderer.sprite = virus;
+        stateColorRenderer.color = Color.red;
+        while (m_isInfected)
         {
-            //int rnd = (int)Random.Range(1, 16);
-
-            if (connectionA != null)
-            {
-                connectionControllerA = connectionA.GetComponent<NodeController>();
-
-                if (!connectionControllerA.isInfected)
-                {
-                    connectionControllerA.StartInfection();          
-                }
-            }
-            if (connectionB != null)
-            {
-                connectionControllerB = connectionB.GetComponent<NodeController>();
-
-                if (!connectionControllerB.isInfected)
-                {
-                    connectionControllerB.StartInfection();
-                }
-
-            }
-            if (connectionC != null)
-            {
-                connectionControllerC = connectionC.GetComponent<NodeController>();
-
-                if (!connectionControllerC.isInfected)
-                {
-                    connectionControllerC.StartInfection();
-                }
-            }
-            if (connectionD != null)
-            {
-                connectionControllerD = connectionD.GetComponent<NodeController>();
-
-                if (!connectionControllerD.isInfected)
-                {
-                    connectionControllerD.StartInfection();
-                }
-            }
+            //Array of waitfor seconds
+            yield return m_infectionTicks[Random.Range(0, m_infectionTicks.Length)];
+            var city = m_connectedCities.Keys.ElementAt(Random.Range(0,m_connectedCities.Count));
+            if (!city.m_isInfected)
+                city.Infect();
+            //SPREAD TO OTHERS LOGIC
         }
 
-        startedSpreading = false;
+    }
+    #endregion
+
+    #region Protect
+    public void Protect()
+    {
+        if (!isProtected && !m_isInfected)
+            m_protection = StartCoroutine(Protection());
     }
 
-    public void StartInfection()
+    IEnumerator Protection()
     {
-        if (!isProtected && !isInfected)
+        symbolRenderer.sprite = shield;
+        stateColorRenderer.color = Color.yellow;
+        yield return m_protectedDelay;
+        isProtected = true;
+        stateColorRenderer.color = Color.green;
+
+        while (true)
         {
-            StartCoroutine(Infect());
+            yield return m_protectedTick;
+            isProtected = false;
+            symbolRenderer.sprite = null;
+            stateColorRenderer.color = Color.white;
+            break;
         }
+        m_protection = null;
+    }
+    #endregion
+
+    #region Cure
+    public void Cure()
+    {
+        if (m_isInfected)
+             m_heal = StartCoroutine(Healing());
     }
 
-    IEnumerator Infect()
+    IEnumerator Healing()
     {
-        if (!isProtected && !isInfected)
-        {
-            yield return m_infectionTick;
-            isInfected = true;
-            symbolRenderer.sprite = virus;
-            stateColorRenderer.color = Color.red;
-        }
-    }
-
-    public void StartProtecting()
-    {
-        if (!isProtected && !isInfected)
-        {
-            StartCoroutine(Protect());
-            symbolRenderer.sprite = shield;
-            stateColorRenderer.color = Color.yellow;
-        }
-    }
-
-    IEnumerator Protect()
-    {
-        yield return new WaitForSeconds(timeTilProtected);
-        if (!isInfected)
-        {
-            isProtected = true;
-            symbolRenderer.sprite = shield;
-            stateColorRenderer.color = Color.green;
-        }
-    }
-
-    public void StartHealing()
-    {
-        if (isInfected)
-        {
-            StartCoroutine(Heal());
-            symbolRenderer.sprite = cross;
-            stateColorRenderer.color = Color.yellow;
-        }
-    }
-
-    IEnumerator Heal()
-    {
-        yield return new WaitForSeconds(timeTilHealed);
-        isInfected = false;
+        symbolRenderer.sprite = cross;
+        stateColorRenderer.color = Color.yellow;
+        yield return m_healDelay;
+        m_isInfected = false;
+        StopCoroutine(m_infection);
+        m_infection = null;
         symbolRenderer.sprite = null;
         stateColorRenderer.color = Color.white;
+        m_heal = null;
     }
+    #endregion
 }
