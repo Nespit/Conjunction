@@ -11,8 +11,24 @@ public enum City
     SanFrancisco = 4,
     Vancouver = 5,
     Houston = 6,
-    CityCount = 7
-
+    NewYork = 7,
+    SaintJohn = 8,
+    LosAngeles = 9,
+    Jacksonville = 10,
+    Miami = 11,
+    MexicoCity = 12,
+    Bogota = 13,
+    Caracas = 14,
+    Quito = 15,
+    Lima = 16,
+    LaPaz = 17,
+    SantiagodeChile = 18,
+    BuenosAires = 19,
+    SaoPaulo = 20,
+    RiodeJaneiro = 21,
+    Brasilia = 22,
+    Fortaleza = 23,
+    CityCount = 24
 }
 
 public class CityDatabase : MonoBehaviour {
@@ -31,8 +47,7 @@ public class CityDatabase : MonoBehaviour {
             }
         }
 
-        Debug.Log(m_cities[City.Anchorage]);
-		
+        //Debug.Log(m_cities[City.Anchorage]);	
 	}
 	
 	// Update is called once per frame

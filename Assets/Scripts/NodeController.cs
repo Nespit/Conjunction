@@ -32,8 +32,6 @@ public class NodeController : MonoBehaviour
     public Color ownerColor;
     public Color stateColor;
     
-
-
     private bool m_isInfected;
     public bool startedSpreading
     {
@@ -66,7 +64,7 @@ public class NodeController : MonoBehaviour
     private Coroutine m_protection;
     private Coroutine m_heal;
 
-    private const float CONNECTION_WIDTH = 0.15f;
+    private const float CONNECTION_WIDTH = 0.17f;
 
 
     void Start()
@@ -109,8 +107,6 @@ public class NodeController : MonoBehaviour
             connection.Value.startColor = ownerColor;
             connection.Value.endColor = connection.Key.ownerColor;
         }
-
-
     }
 
     #region Infect
@@ -134,10 +130,9 @@ public class NodeController : MonoBehaviour
             yield return m_infectionTicks[Random.Range(0, m_infectionTicks.Length)];
             var city = m_connectedCities.Keys.ElementAt(Random.Range(0,m_connectedCities.Count));
             if (!city.m_isInfected)
-                city.Infect();
+                city.Infect();         
             //SPREAD TO OTHERS LOGIC
         }
-
     }
     #endregion
 
@@ -153,17 +148,19 @@ public class NodeController : MonoBehaviour
         symbolRenderer.sprite = shield;
         stateColorRenderer.color = Color.yellow;
         yield return m_protectedDelay;
-        isProtected = true;
-        stateColorRenderer.color = Color.green;
-
-        while (true)
+        if (!m_isInfected)
         {
-            yield return m_protectedTick;
-            isProtected = false;
-            symbolRenderer.sprite = null;
-            stateColorRenderer.color = Color.white;
-            break;
-        }
+            isProtected = true;
+            stateColorRenderer.color = Color.green;
+            while (true)
+            {
+                yield return m_protectedTick;
+                isProtected = false;
+                symbolRenderer.sprite = null;
+                stateColorRenderer.color = Color.white;
+                break;
+            }
+        }  
         m_protection = null;
     }
     #endregion
@@ -179,7 +176,7 @@ public class NodeController : MonoBehaviour
     {
         symbolRenderer.sprite = cross;
         stateColorRenderer.color = Color.yellow;
-        yield return m_healDelay;
+        yield return m_healDelayTick;
         m_isInfected = false;
         StopCoroutine(m_infection);
         m_infection = null;

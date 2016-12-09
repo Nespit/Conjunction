@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class GameManager : NetworkBehaviour
+public class GameManager : MonoBehaviour
 {
-	[SyncVar]public Color playerColorA;
-	[SyncVar]public Color playerColorB;
-	[SyncVar]public Color playerColorC;
-	[SyncVar]public Color playerColorD;
+	public Color playerColorA;
+	public Color playerColorB;
+	public Color playerColorC;
+	public Color playerColorD;
 
-	[SyncVar]public bool colorIsTakenA;
-	[SyncVar]public bool colorIsTakenB;
-	[SyncVar]public bool colorIsTakenC;
-	[SyncVar]public bool colorIsTakenD;
+	public bool colorIsTakenA;
+	public bool colorIsTakenB;
+	public bool colorIsTakenC;
+	public bool colorIsTakenD;
 
 	public static GameManager instance = null;
 
@@ -26,15 +26,5 @@ public class GameManager : NetworkBehaviour
 			Destroy(gameObject);    
 		}
 		DontDestroyOnLoad(gameObject);
-	}
-
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
 	}
 }
