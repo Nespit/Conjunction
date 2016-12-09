@@ -2,16 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 //[ExecuteInEditMode]
 public class NodeController : MonoBehaviour
 {
     [SerializeField]
-    private SpriteRenderer stateColorRenderer;   //Renders the outer color of the node.
+    private Image stateColorRenderer;   //Renders the outer color of the node.
     [SerializeField]
-    private SpriteRenderer ownerColorRenderer;   //Renders the inner color of the node.
+    private Image ownerColorRenderer;   //Renders the inner color of the node.
     [SerializeField]
-    private SpriteRenderer symbolRenderer;  //Renders the symbol of the node.
+    private Image symbolRenderer;  //Renders the symbol of the node.
 
     [SerializeField]
     private Sprite virus;
