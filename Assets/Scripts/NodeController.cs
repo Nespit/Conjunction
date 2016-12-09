@@ -22,6 +22,8 @@ public class NodeController : MonoBehaviour
     private Sprite shield;
     [SerializeField]
     private Sprite sword;
+    [SerializeField]
+    private Sprite empty;
 
     private string sortingLayer = "Connections";
 
@@ -157,7 +159,7 @@ public class NodeController : MonoBehaviour
             {
                 yield return m_protectedTick;
                 isProtected = false;
-                symbolRenderer.sprite = null;
+                symbolRenderer.sprite = empty;
                 stateColorRenderer.color = Color.white;
                 break;
             }
@@ -181,7 +183,7 @@ public class NodeController : MonoBehaviour
         m_isInfected = false;
         StopCoroutine(m_infection);
         m_infection = null;
-        symbolRenderer.sprite = null;
+        symbolRenderer.sprite = empty;
         stateColorRenderer.color = Color.white;
         m_heal = null;
     }
