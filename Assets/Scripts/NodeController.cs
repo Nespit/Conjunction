@@ -202,7 +202,7 @@ public class NodeController : MonoBehaviour
     #region Invasion
     public void Invade()
     {
-        if (tutorialPlayerColor != ownerColor)
+        if (tutorialPlayerColor != ownerColor && m_invade != null)
             m_invade = StartCoroutine(Invading());
     }
 
@@ -228,7 +228,9 @@ public class NodeController : MonoBehaviour
         {
             stateColorRenderer.color = Color.white;
             symbolRenderer.sprite = empty;
-        } 
+        }
+
+        m_invade = null;
     }
     #endregion
 
