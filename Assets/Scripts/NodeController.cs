@@ -34,6 +34,8 @@ public class NodeController : MonoBehaviour
     public Material connectionMat;
     public Color ownerColor;
     public Color stateColor;
+    [SerializeField]
+    private Color tutorialPlayerColor;
     
     private bool m_isInfected;
     public bool startedSpreading
@@ -49,6 +51,7 @@ public class NodeController : MonoBehaviour
     private WaitForSeconds m_protectedDelay;
     private WaitForSeconds m_protectedTick;
     private WaitForSeconds m_healDelayTick;
+    private WaitForSeconds m_invasionDelayTick;
 
     [SerializeField]
     private int m_numberOfInfectionTickers;
@@ -62,10 +65,13 @@ public class NodeController : MonoBehaviour
     private float m_protectionDuration;
     [SerializeField]
     private float m_healDelay;
+    [SerializeField]
+    private float m_invasionDelay;
 
     private Coroutine m_infection;
     private Coroutine m_protection;
     private Coroutine m_heal;
+    private Coroutine m_invade;
 
     private const float CONNECTION_WIDTH = 0.17f;
 
@@ -77,6 +83,7 @@ public class NodeController : MonoBehaviour
         m_protectedDelay = new WaitForSeconds(m_protectDelay);
         m_protectedTick = new WaitForSeconds(m_protectionDuration);
         m_healDelayTick = new WaitForSeconds(m_healDelay);
+        m_invasionDelayTick = new WaitForSeconds(m_invasionDelay);
 
         for (int i = 0; i < m_numberOfInfectionTickers; i++)
         {
@@ -125,8 +132,11 @@ public class NodeController : MonoBehaviour
     IEnumerator Infection()
     {
         m_isInfected = true;
-        symbolRenderer.sprite = virus;
-        stateColorRenderer.color = Color.red;
+        if(ownerColor == tutorialPlayerColor)
+        {
+            symbolRenderer.sprite = virus;
+            stateColorRenderer.color = Color.red;
+        }
         while (m_isInfected)
         {
             //Array of waitfor seconds
@@ -186,6 +196,52 @@ public class NodeController : MonoBehaviour
         symbolRenderer.sprite = empty;
         stateColorRenderer.color = Color.white;
         m_heal = null;
+    }
+    #endregion
+
+    #region Invasion
+    public void Invade()
+    {
+        if (tutorialPlayerColor != ownerColor)
+            m_invade = StartCoroutine(Invading());
+    }
+
+    IEnumerator Invading()
+    {
+        symbolRenderer.sprite = sword;
+        stateColorRenderer.color = Color.yellow;
+        yield return m_invasionDelayTick;
+        ownerColor = tutorialPlayerColor;
+        ownerColorRenderer.color = tutorialPlayerColor;
+
+        foreach (KeyValuePair<NodeController, LineRenderer> connection in m_connectedCities)
+        {
+            connection.Value.startColor = ownerColor;
+        }
+
+        if (m_isInfected)
+        {
+            stateColorRenderer.color = Color.red;
+            symbolRenderer.sprite = virus;
+        }
+        else
+        {
+            stateColorRenderer.color = Color.white;
+            symbolRenderer.sprite = empty;
+        } 
+    }
+    #endregion
+
+    #region Interaction
+    public void LeftClick()
+    {
+        if (tutorialPlayerColor == ownerColor)
+        {
+            if (m_isInfected)
+                Cure();
+            else Protect();
+        }
+        else Invade();
     }
     #endregion
 }

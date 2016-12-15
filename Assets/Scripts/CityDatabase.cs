@@ -38,7 +38,7 @@ public class CityDatabase : MonoBehaviour {
 	// Use this for initialization
 	void Awake () {
         m_cities = new Dictionary<City, GameObject>();
-        for(int i=0; i< transform.childCount; i++)
+        for(int i=0; i < transform.childCount; i++)
         {
             for(int j=1; j < (int)City.CityCount; j++)
             {
@@ -48,11 +48,6 @@ public class CityDatabase : MonoBehaviour {
         }
 
         //Debug.Log(m_cities[City.Anchorage]);	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
 	}
 
     public NodeController GetCity(City city)
