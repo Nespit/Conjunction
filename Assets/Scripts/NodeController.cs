@@ -31,6 +31,14 @@ public class NodeController : MonoBehaviour
     List<City> m_connections;
     Dictionary<NodeController,LineRenderer> m_connectedCities;
 
+    public Dictionary<NodeController, LineRenderer> connectedCities
+    {
+        get
+        {
+            return m_connectedCities;
+        }
+    }
+
     public Material connectionMat;
     public Color ownerColor;
     public Color stateColor;
@@ -216,7 +224,13 @@ public class NodeController : MonoBehaviour
 
         foreach (KeyValuePair<NodeController, LineRenderer> connection in m_connectedCities)
         {
-            connection.Value.startColor = ownerColor;
+            if (connection.Value.startColor == ownerColor)
+                connection.Value.endColor = ownerColor;
+            else
+                connection.Value.startColor = ownerColor;
+
+            connection.Key.connectedCities[this].endColor = ownerColor;
+
         }
 
         if (m_isInfected)
