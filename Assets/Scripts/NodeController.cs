@@ -54,7 +54,7 @@ public class NodeController : MonoBehaviour
         }
     }
     public bool isProtected;
-
+    public bool canSpread = true;
     private WaitForSeconds[] m_infectionTicks;
     private WaitForSeconds m_protectedDelay;
     private WaitForSeconds m_protectedTick;
@@ -152,10 +152,14 @@ public class NodeController : MonoBehaviour
         {
             //Array of waitfor seconds
             yield return m_infectionTicks[Random.Range(0, m_infectionTicks.Length)];
-            var city = m_connectedCities.Keys.ElementAt(Random.Range(0,m_connectedCities.Count));
-            if (!city.m_isInfected)
-                city.Infect();         
-            //SPREAD TO OTHERS LOGIC
+            if (canSpread)
+            {
+                var city = m_connectedCities.Keys.ElementAt(Random.Range(0, m_connectedCities.Count));
+                if (!city.m_isInfected)
+                    city.Infect();
+                //SPREAD TO OTHERS LOGIC
+            }
+
         }
     }
     #endregion
