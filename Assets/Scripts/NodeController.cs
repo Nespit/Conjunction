@@ -45,7 +45,7 @@ public class NodeController : MonoBehaviour
     [SerializeField]
     private Color tutorialPlayerColor;
     
-    private bool m_isInfected;
+    public bool m_isInfected;
     public bool startedSpreading
     {
         get
@@ -81,11 +81,14 @@ public class NodeController : MonoBehaviour
     private Coroutine m_heal;
     private Coroutine m_invade;
 
-    private const float CONNECTION_WIDTH = 0.17f;
+    private const float CONNECTION_WIDTH = 2f;
 
+    private ProjectManager projectManager;
 
     void Start()
     {
+        projectManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<ProjectManager>();
+
         //Initialize YIELDs
         m_infectionTicks = new WaitForSeconds[m_numberOfInfectionTickers];
         m_protectedDelay = new WaitForSeconds(m_protectDelay);
@@ -160,15 +163,17 @@ public class NodeController : MonoBehaviour
     #region Protect
     public void Protect()
     {
-        if (!isProtected && !m_isInfected)
+        if (!isProtected && !m_isInfected && projectManager.availableActions > 0 && m_protection == null)
             m_protection = StartCoroutine(Protection());
     }
 
     IEnumerator Protection()
     {
+        projectManager.availableActions -= 1;
         symbolRenderer.sprite = shield;
         stateColorRenderer.color = Color.yellow;
         yield return m_protectedDelay;
+        projectManager.availableActions += 1;
         if (!m_isInfected)
         {
             isProtected = true;
@@ -181,7 +186,7 @@ public class NodeController : MonoBehaviour
                 stateColorRenderer.color = Color.white;
                 break;
             }
-        }  
+        }
         m_protection = null;
     }
     #endregion
@@ -189,12 +194,13 @@ public class NodeController : MonoBehaviour
     #region Cure
     public void Cure()
     {
-        if (m_isInfected)
+        if (m_isInfected && m_heal == null && projectManager.availableActions > 0)
              m_heal = StartCoroutine(Healing());
     }
 
     IEnumerator Healing()
     {
+        projectManager.availableActions -= 1;
         symbolRenderer.sprite = cross;
         stateColorRenderer.color = Color.yellow;
         yield return m_healDelayTick;
@@ -203,6 +209,7 @@ public class NodeController : MonoBehaviour
         m_infection = null;
         symbolRenderer.sprite = empty;
         stateColorRenderer.color = Color.white;
+        projectManager.availableActions += 1;
         m_heal = null;
     }
     #endregion
@@ -210,40 +217,48 @@ public class NodeController : MonoBehaviour
     #region Invasion
     public void Invade()
     {
-        if (tutorialPlayerColor != ownerColor && m_invade == null)
+        if (tutorialPlayerColor != ownerColor && m_invade == null && projectManager.availableActions > 0)
             m_invade = StartCoroutine(Invading());
     }
 
     IEnumerator Invading()
     {
+        projectManager.availableActions -= 1;
         symbolRenderer.sprite = sword;
         stateColorRenderer.color = Color.yellow;
         yield return m_invasionDelayTick;
-        ownerColor = tutorialPlayerColor;
-        ownerColorRenderer.color = tutorialPlayerColor;
-
-        foreach (KeyValuePair<NodeController, LineRenderer> connection in m_connectedCities)
-        {
-            if (connection.Value.startColor == ownerColor)
-                connection.Value.endColor = ownerColor;
-            else
-                connection.Value.startColor = ownerColor;
-
-            connection.Key.connectedCities[this].endColor = ownerColor;
-
-        }
-
         if (m_isInfected)
         {
-            stateColorRenderer.color = Color.red;
-            symbolRenderer.sprite = virus;
+            ownerColor = tutorialPlayerColor;
+            ownerColorRenderer.color = tutorialPlayerColor;
+
+            foreach (KeyValuePair<NodeController, LineRenderer> connection in m_connectedCities)
+            {
+                if (connection.Value.startColor == ownerColor)
+                    connection.Value.endColor = ownerColor;
+                else
+                    connection.Value.startColor = ownerColor;
+
+                connection.Key.connectedCities[this].endColor = ownerColor;
+            }
+
+            if (m_isInfected)
+            {
+                stateColorRenderer.color = Color.red;
+                symbolRenderer.sprite = virus;
+            }
+            else
+            {
+                stateColorRenderer.color = Color.white;
+                symbolRenderer.sprite = empty;
+            }
         }
         else
         {
             stateColorRenderer.color = Color.white;
             symbolRenderer.sprite = empty;
         }
-
+        projectManager.availableActions += 1;
         m_invade = null;
     }
     #endregion
