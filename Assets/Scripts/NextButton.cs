@@ -16,7 +16,7 @@ public class NextButton : MonoBehaviour {
 		button.onClick.AddListener( () => {GoToNextPage();} ); 
 
 		//If the button is not necessary disable it and enable it if it becomes necessary.
-		if (projectManager.iSlideNumber == 4 && button.gameObject.activeSelf) {
+		if (projectManager.iSlideNumber ==  1 || projectManager.iSlideNumber == 2 || projectManager.iSlideNumber == 4 && button.gameObject.activeSelf) {
 			button.gameObject.SetActive (false);
 		} else if (!button.gameObject.activeSelf) {
 			button.gameObject.SetActive (true);

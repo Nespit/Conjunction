@@ -8,6 +8,8 @@ public class ActionButton : MonoBehaviour
 {
     private Button button;
     private ProjectManager projectManager;
+	[SerializeField]
+	private Button nextButton;
 
     // Use this for initialization
     void Start()
@@ -25,4 +27,10 @@ public class ActionButton : MonoBehaviour
             button.gameObject.SetActive(true);
         }
     }
+
+	public void SetNextActive()
+	{
+		if (!nextButton.gameObject.activeSelf) 
+			nextButton.gameObject.SetActive (true);
+	}
 }

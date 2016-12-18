@@ -48,22 +48,20 @@ public class UIText : MonoBehaviour
 				}
 			case 2:
 				{
-					txt.text = ("Now it's time to learn how to stop the virus from spreading. It is quite simple." +
+					txt.text = ("Now it's time to learn how to stop the virus from spreading." +
                             "\n\nYou can either protect uninfected nodes by clicking on them or heal infected ones, also by clicking on them." +
                             "\n\nProtected nodes can't be infected by the virus. However, the protection wears off after a while, so remember to refresh it if necessary." + 
                             "\n\nNotice that both these interactions are processes and take a while to complete. Until completed, the respective nodes stay infectious and vulnerable." +
                             "\n\nAdditionally, there are limitations to how many of these processes can be run simultaneously. The number in the left bottom corner indicates how many more actions you can take." +
-                            "\n\nRelease the virus as you did before and put this information to use." +
-                            "\n\nClick 'Next' once you're ready to continue.");
+                            "\n\nRelease the virus as you did before and put this information to use. Don't be scared, you can't break anything.");
 					subTxt.text = ("3/5");
                     return;
 				}
             case 3:
                 {
-                    txt.text = ("Unfortunately, we have not yet succeeded in seizing controll of the entire world and there are still some competitors left." +
-                            "\n\nThe virus might actually help us to change that. Under normal circumstances we couldn't just take over cities, but if they are infected our conversion attempts can take advantage of the structural weakness caused by the virus. The only problem is, that we don't know first hand which of their cities are infected." +
-                            "\n\nVirus spread has been frozen for now. Try to infiltrate the infected cities. A click on an opponents city starts the invasion attempt." +
-                             "\n\nClick 'Next' once you're ready to continue.");
+					txt.text = ("Unfortunately, we have not yet succeeded in seizing controll of the entire world and there are still some competitors left (notice the differently colored nodes)." +
+                            "\n\nThe virus might actually help us to change that. Under normal circumstances we couldn't just take over cities. However, infected tiles are weakened and easily annexed. The only problem is, that we don't know first hand which of their cities are infected." +
+                            "\n\nVirus spread has been frozen for now. Try to infiltrate the infected cities. A click on an opponents city starts the invasion attempt.");
                         subTxt.text = ("4/5");
                     return;
                     }
