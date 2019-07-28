@@ -47,16 +47,10 @@ public class CityEntityGenerator : MonoBehaviour
         var entity = entityManager.CreateEntity();
         entityManager.AddComponentData(entity, data);
 
-        if (connections.Count != 0)
+        for (int i = 0; i < connections.Count; ++i)
         {
-            City[] cityConnections = new City[connections.Count];
-
-            for (int i = 0; i < cityConnections.Length; ++i)
-            {
-                cityConnections[i] = connections[i];
-                var dataX = new ConnectionComponent(cityConnections[i]);
-                entityManager.AddComponentData(entity, dataX);
-            }
+            var dataX = new ConnectionComponent(connections[i]);
+            entityManager.AddComponentData(entity, dataX);
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Entities;
 
-public class ConnectionComponent : IComponentData
+public struct ConnectionComponent : IComponentData
 {
     public City connection;
 
