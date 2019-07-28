@@ -5,15 +5,16 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class CityEntityGenerator : MonoBehaviour
+[RequiresEntityConversion]
+public class CityEntityGenerator : MonoBehaviour, IConvertGameObjectToEntity
 {
-    private EntityManager entityManager;
+    //private EntityManager entityManager;
 
     [SerializeField]
     public City city;
 
-    [SerializeField]
-    List<City> connections;
+    //[SerializeField]
+    //List<City> connections;
 
     [SerializeField]
     public int healthyPopulation;
@@ -39,18 +40,24 @@ public class CityEntityGenerator : MonoBehaviour
     [SerializeField]
     public int quarantineLevel;
     
-    private void Start()
+    //private void Start()
+    //{
+    //    entityManager = World.Active.EntityManager;
+
+    //    var data = new CityComponent(city, healthyPopulation, sickPopulation, moral, industry, sicknessRate, sicknessDetectionLevel, infrastructureLevel, quarantineLevel);
+    //    var entity = entityManager.CreateEntity();
+    //    entityManager.AddComponentData(entity, data);
+
+    //    for (int i = 0; i < connections.Count; ++i)
+    //    {
+    //        var dataX = new ConnectionComponent(connections[i]);
+    //        entityManager.AddComponentData(entity, dataX);
+    //    }
+    //}
+
+    public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
     {
-        entityManager = World.Active.EntityManager;
-
         var data = new CityComponent(city, healthyPopulation, sickPopulation, moral, industry, sicknessRate, sicknessDetectionLevel, infrastructureLevel, quarantineLevel);
-        var entity = entityManager.CreateEntity();
-        entityManager.AddComponentData(entity, data);
-
-        for (int i = 0; i < connections.Count; ++i)
-        {
-            var dataX = new ConnectionComponent(connections[i]);
-            entityManager.AddComponentData(entity, dataX);
-        }
+        dstManager.AddComponentData(entity, data);
     }
 }

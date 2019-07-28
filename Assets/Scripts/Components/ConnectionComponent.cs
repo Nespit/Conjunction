@@ -5,10 +5,9 @@ using Unity.Entities;
 
 public struct ConnectionComponent : IComponentData
 {
-    public City connection;
+    public City pointA;
+    public City pointB;
 
-    public ConnectionComponent(City connection)
-    {
-        this.connection = connection;
-    }
+    public Vector3 posA;
+    public Vector3 posB;
 }
