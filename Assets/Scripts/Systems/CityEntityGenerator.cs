@@ -106,23 +106,22 @@ public class CityEntityGenerator : MonoBehaviour, IConvertGameObjectToEntity
     {
         Vector3[] vertices = new Vector3[sides*2];
         Vector2[] uv = new Vector2[sides*2];
-        int[] triangles = new int[(sides*2) * 3];
+        uint triangleCount = sides*2;
+        int[] triangleIndices = new int[triangleCount * 3];
 
         //Vertices
         float x;
         float y;
 
-        for (int i = 0; i < sides*2; ++i)
+        for (int i = 0; i < sides; ++i)
         {
             x = radius * Mathf.Sin((2 * Mathf.PI * i) / sides);
             y = radius * Mathf.Cos((2 * Mathf.PI * i) / sides);
-            vertices[i] = new Vector3(x, y, 0f);
-
-            ++i; 
+            vertices[i*2] = new Vector3(x, y, 0f);
 
             x = (radius - width) * Mathf.Sin((2 * Mathf.PI * i) / sides);
             y = (radius - width) * Mathf.Cos((2 * Mathf.PI * i) / sides);
-            vertices[i] = new Vector3(x, y, 0f);
+            vertices[i*2+1] = new Vector3(x, y, 0f);
         }
 
         //UVs
@@ -132,24 +131,27 @@ public class CityEntityGenerator : MonoBehaviour, IConvertGameObjectToEntity
         }
 
         //Triangles
-        for (int i = 0; i < sides * 2; ++i)
+        for (int i = 0; i < triangleCount; ++i)
         {
-            triangles[i] = i;
-            triangles[i + 1] = i + 1;
-            triangles[i + 2] = i + 2;
-
-            ++i;
-
-            triangles[i] = i;
-            triangles[i + 1] = i + 1;
-            triangles[i + 2] = i + 2;
+            if (i % 2 != 0)
+            {
+                triangleIndices[i * 3] = i % vertices.Length;
+                triangleIndices[i * 3 + 1] = (i + 1) % vertices.Length;
+                triangleIndices[i * 3 + 2] = (i + 2) % vertices.Length;
+            }
+            else
+            {
+                triangleIndices[i * 3 + 1] = i % vertices.Length;
+                triangleIndices[i * 3] = (i + 1) % vertices.Length;
+                triangleIndices[i * 3 + 2] = (i + 2) % vertices.Length;
+            }  
         }
 
         Mesh mesh = new Mesh
         {
             vertices = vertices,
             uv = uv,
-            triangles = triangles
+            triangles = triangleIndices
         };
 
         return mesh;
@@ -163,8 +165,8 @@ public class CityEntityGenerator : MonoBehaviour, IConvertGameObjectToEntity
 
         dstManager.AddSharedComponentData(entity, new RenderMesh
         {
-            mesh = PolygonalMesh(30f, 5),
-            //mesh = DoubleSidedPolygonalMesh(30f, 5f, 6),
+            //mesh = PolygonalMesh(30f, 5),
+            mesh = DoubleSidedPolygonalMesh(30f, 10f, 31),
             material = circleMaterial
         });
     }
