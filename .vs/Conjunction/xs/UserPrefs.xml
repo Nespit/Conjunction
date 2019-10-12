@@ -1,28 +1,20 @@
 ﻿<Properties StartupConfiguration="{11EF2D5B-D0D2-570B-C48F-74602AA6CBBF}|">
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Systems/CityEntityGenerator.cs">
     <Files>
-      <File FileName="Assets/Scripts/Components/ConnectionComponent.cs" Line="12" Column="25" />
-      <File FileName="Assets/Scripts/Components/CityComponent.cs" />
-      <File FileName="Assets/Scripts/Systems/CityEntityGenerator.cs" Line="12" Column="1" />
-      <File FileName="Assets/Scripts/Systems/ConnectionEditor.cs" Line="63" Column="35" />
-      <File FileName="Assets/Scripts/Systems/ConnectionJobSystem.cs" />
-      <File FileName="../../Shared/Unity/EntityComponentSystemSamples/Samples/Assets/HelloCube/1. ForEach/RotationSpeedSystem_ForEach.cs" />
+      <File FileName="Assets/Shaders/NodeStatusBar.shader" Line="30" Column="13" />
+      <File FileName="Assets/Scripts/Systems/CityEntityGenerator.cs" Line="1" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="Conjunction" expanded="True">
             <Node name="Assets" expanded="True">
-              <Node name="2. IJobForEach (Task 1)" expanded="True" />
-              <Node name="Legacy" expanded="True">
-                <Node name="Scripts" expanded="True" />
-              </Node>
               <Node name="Scripts" expanded="True">
-                <Node name="Components" expanded="True" />
                 <Node name="Systems" expanded="True">
                   <Node name="CityEntityGenerator.cs" selected="True" />
                 </Node>
               </Node>
+              <Node name="Shaders" expanded="True" />
             </Node>
           </Node>
         </State>
@@ -31,7 +23,7 @@
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="229a3894-f8e2-4dc8-a63c-56b0563bbb77" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="ffe11366-bbfa-400c-bfaa-77dcad358d8a" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
