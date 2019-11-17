@@ -162,12 +162,12 @@ public class CityEntityGenerator : MonoBehaviour, IConvertGameObjectToEntity
     {
         var data = new CityComponent(cityGameObject.transform.position, city, healthyPopulation, sickPopulation, moral, industry, sicknessRate, sicknessDetectionLevel, infrastructureLevel, quarantineLevel);
         dstManager.AddComponentData(entity, data);
-
+    
         dstManager.AddSharedComponentData(entity, new RenderMesh
         {
             //mesh = PolygonalMesh(30f, 5),
-            mesh = DoubleSidedPolygonalMesh(30f, 10f, 5),
-            material = circleMaterial
+            mesh = DoubleSidedPolygonalMesh(30f, 10f, 16),
+            material = new Material(circleMaterial)
         });
     }
 }
